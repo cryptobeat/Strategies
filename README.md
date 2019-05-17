@@ -200,3 +200,93 @@ handle: ->
 
 onOrderUpdate: ->
 ```
+
+<h2>TA-lib</h2>
+
+TA-Lib is available for indicators.
+
+```coffee
+#@engine:1.0
+#@name:sample 0.0.1
+#@input(name="pair1", element="field", type="instrument", default="BTCETH", min="5min", max="24h", description="Primary pair")
+  
+#### Bot script starts below ####
+
+macd: (data, fast_period, slow_period, signal_period) ->
+    results = @talib.MACD
+        inReal: data
+        startIdx: 0
+        endIdx: data.length - 1
+        optInFastPeriod: fast_period
+        optInSlowPeriod: slow_period
+        optInSignalPeriod: signal_period
+    result =
+        macd: results.outMACD
+        signal: results.outMACDSignal
+        histogram: results.outMACDHist
+    return result
+
+# script initialization
+init: ->
+    i1 = @instrument( {name:'pair1'} )
+#define chart plots type, name, color
+    @setPlotOptions
+        volume_plot:
+            name: 'Volume' 
+            color: 'lightgray'
+            type: 'column'
+            chartidx: 1
+            axis: 'axisVol'
+        signal_plot:
+            name: 'Signal'
+            color: 'lime'
+            type: 'line'
+            chartidx: 1
+            axis: 'axisSig'
+        macd_plot_red:
+            name: 'Red'
+            color: 'red'
+            lineWidth: 1
+            type: 'line'
+            axis: 'axisSig'
+        macd_plot_hist:
+            name: 'hst'
+            color: 'red'
+            lineWidth: 1
+            type: 'column'
+            axis: 'axisExt'
+
+#define chart axes and position
+    @setAxisOptions
+        mainAxis: #predefined candles plot
+            name: i1.asset() + i1.curr()
+            height: '60%'
+        axisVol:
+            offset: '10%'
+            height: '50%'
+            secondary: true
+        axisSig:
+            name:'MACD'
+            offset: '61%'
+            height: '25%'
+        axisExt:
+            name:'Hst'
+            offset: '80%'
+            height: '20%'
+
+    @debug "Initialized:"
+
+#Candle tick hook
+handle: ->
+    i1 = @instrument( {name:'pair1'} )
+    macdInd = @macd i1.close, 9, 26, 12
+    @plot
+        volume_plot: _.last(i1.volume)
+        signal_plot: _.last(macdInd.signal)
+        macd_plot_red: _.last(macdInd.macd)
+        macd_plot_hist: _.last(macdInd.histogram)
+        
+    
+onOrderUpdate: ->
+
+```

@@ -121,3 +121,62 @@ onOrderUpdate: ->
     ordertype = @context.orderInfo.ordertype
     @info "#{ordertype} order completed #{JSON.stringify(positions)}"
 ```
+<h2>Charts</h2>
+
+You can publish different information on the charts
+
+```coffee
+#@engine:1.0
+#@name:sample 0.0.1
+#@input(name="pair1", element="field", type="instrument", default="BTCETH", min="5min", max="24h", description="Primary pair")
+  
+#### Bot script starts below ####
+
+# script initialization
+init: ->
+#define chart plots type, name, color
+    @setPlotOptions
+        volume_plot:
+            name: 'Volume' 
+            color: 'lightgray'
+            type: 'column'
+            chartidx: 1
+            axis: 'axisVol'
+        sell_point:
+            color: 'red'
+            axis: 'mainAxis'
+            type: 'flags'
+            title: 'Sell'
+        buy_point:
+            color: 'green'
+            axis: 'mainAxis'
+            type: 'flags'
+            title: 'Buy'
+
+#define chart axes and position
+    @setAxisOptions
+        mainAxis: #predefined candles plot
+            name:'BCHBTC'
+            height: '60%'
+        axisVol:
+            offset: '10%'
+            height: '50%'
+            secondary: true
+    @debug "Initialized:"
+
+#Candle tick hook
+handle: ->
+    i1 = @instrument( {name:'pair1'} )
+    @plot
+        volume_plot: _.last(i1.volume)
+
+    randomNumber = Math.floor(Math.random() * 20 )
+    if randomNumber == 5
+        @plot
+            sell_point: _.last(i1.close)
+    if randomNumber == 4
+        @plot
+            buy_point: _.last(i1.close)
+
+onOrderUpdate: ->
+```

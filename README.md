@@ -35,7 +35,7 @@ onOrderUpdate: ->
 ```
 
 <h2>Parameters</h2>
-You can define parameters which you can later set in the parameters window by entering @input tag in the meta data section
+You can define parameters which you can later set in the parameters window.
 
 ```coffee
 #@engine:1.0

@@ -22,7 +22,7 @@ init: ->
 #new candle callback
 handle: ->
     # get an istrument
-    i1 = @instrument( {asset:'ETH'} )
+    i1 = @instrument( {name:'pair1'} )
     # get date
     date = new Date(new Number(_.last i1.timeStamp))
     # get last loading price
@@ -53,7 +53,7 @@ init: ->
 #new candle callback
 handle: ->
     # get an istrument
-    i1 = @instrument( {asset:'ETH'} )
+    i1 = @instrument( {name:'pair1'} )
     close = _.last i1.close
     # get date
     date = new Date(new Number(_.last i1.timeStamp))

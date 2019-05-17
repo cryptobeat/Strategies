@@ -34,6 +34,24 @@ handle: ->
 onOrderUpdate: ->
 ```
 
+<h2>Parameters</h2>
+You can define parameters which you can later set in the parameters window by entering @input tag in the meta data section
+```coffee
+#@engine:1.0
+#@name:getting_started 0.0.1
+#@input(name="pair1", element="field", type="instrument", default="BTCETH", min="5min", max="24h", description="Primary pair")
+#@input (name="var1 ", element="field", type="number", default="7", min="-10", max="10", description="option 1")
+
+# script initialization
+init: ->
+    var1 = @context.param.var1
+    @debug "myVar1 #{var1}"
+
+handle: ->
+
+onOrderUpdate: ->
+```
+
 <h2>Variable Scope</h2>
 All the variables are local and they are discared and the end of the execution.
 If you want to carry over the variables between different calls you need to use a variable "@context".

@@ -24,7 +24,7 @@ handle: ->
     # get an istrument
     i1 = @instrument( {name:'pair1'} )
     # get date
-    date = new Date(new Number(_.last i1.timeStamp))
+    date = new Date(_.last i1.timeStamp)
     # get last loading price
     close = _.last i1.close
     # output to log file
@@ -56,7 +56,7 @@ handle: ->
     i1 = @instrument( {name:'pair1'} )
     close = _.last i1.close
     # get date
-    date = new Date(new Number(_.last i1.timeStamp))
+    date = new Date(_.last i1.timeStamp)
     myParam = @context.myParam;
     ret = if myParam.previousPrice then close - myParam.previousPrice else 0
     myParam.previousPrice = close
@@ -65,4 +65,58 @@ handle: ->
 
 # call back when 
 onOrderUpdate: ->
+```
+
+<h2>How to sell/buy</h2>
+```coffee
+#@engine:1.0
+#@name:getting_started 0.0.1
+#@input(name="pair1", element="field", type="instrument", default="BTCETH", min="5min", max="24h", description="Primary pair")
+
+# script initialization
+init: ->
+    @debug "Initialization"
+    # data container
+    @context.orderInfo = {
+        ordertype:''
+    }
+
+#new candle callback
+handle: ->
+    # get an istrument
+    i1 = @instrument( {name:'pair1'} )
+    #load positions
+    positions = @loadPositions('poloniex')
+
+    #currency amount
+    currency = positions[i1.curr()]
+    #asset amount
+    asset = positions[i1.asset()]
+    #current close price
+    close = _.last(i1.close)
+    # round it
+    price = _.floor(close, 6)
+    #buy or selling
+    if (positions[i1.asset()] < 1e-4)
+        # trading type
+        @context.orderInfo.ordertype= 'buy'
+        vol = _.floor(currency / close, 5)
+        # put the order to the exchange
+        @trading.buy('market', i1, price, vol, 0 )
+        @debug "async buying: price:#{price} vol: #{vol}"
+    else
+         # trading type
+        @context.orderInfo.ordertype= 'sell'
+        vol = _.floor(asset, 5)
+        # put the order to the exchange
+        @trading.sell('market', i1, price, vol, 0 )
+        @debug "async selling: price:#{price} vol: #{vol}"
+        
+# call back when order completed
+onOrderUpdate: ->
+    # load positions
+    positions = @loadPositions('poloniex')
+    # all the variables within @context availabe
+    ordertype = @context.orderInfo.ordertype
+    @info "#{ordertype} order completed #{JSON.stringify(positions)}"
 ```

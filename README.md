@@ -123,7 +123,7 @@ onOrderUpdate: ->
 ```
 <h2>Charts</h2>
 
-You can publish different information on the charts
+You can publish different information on the charts using @plot option. It requires  @setPlotOptions and @setAxisOptions to be set
 
 ```coffee
 #@engine:1.0
@@ -134,6 +134,7 @@ You can publish different information on the charts
 
 # script initialization
 init: ->
+    i1 = @instrument( {name:'pair1'} )
 #define chart plots type, name, color
     @setPlotOptions
         volume_plot:
@@ -156,7 +157,7 @@ init: ->
 #define chart axes and position
     @setAxisOptions
         mainAxis: #predefined candles plot
-            name:'BCHBTC'
+            name: i1.asset() + i1.curr()
             height: '60%'
         axisVol:
             offset: '10%'

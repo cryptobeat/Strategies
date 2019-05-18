@@ -1,3 +1,51 @@
+<h1>Talib Functions<h1>
+
+This is the unit test and it shows all the supported TALib function.
+By looking at the supported function you can create a function in you coffee script
+<h3>Example</h3>
+In this file you are looking for a function, e.g.
+
+```coffee
+@testNumber3 'MACD', 'outMACD', 'outMACDSignal', 'outMACDHist', talib.MACD
+        startIdx: 0
+        endIdx: high.length - 1
+        inReal: close
+        optInFastPeriod: 0
+        optInSlowPeriod: 0
+        optInSignalPeriod: 0
+```
+So in you script you will create a function like:
+
+```coffee
+macd: (data, fast_period, slow_period, signal_period) ->
+    results = @talib.MACD
+        inReal: data
+        startIdx: 0
+        endIdx: data.length - 1
+        optInFastPeriod: fast_period
+        optInSlowPeriod: slow_period
+        optInSignalPeriod: signal_period
+    result =
+        macd: results.outMACD
+        signal: results.outMACDSignal
+        histogram: results.outMACDHist
+    return result
+```
+and you can call it like:
+
+```coffee
+handle: ->
+    i1 = @instrument( {name:'pair1'} )
+    macdInd = @macd i1.close, 9, 26, 12
+    @plot
+        volume_plot: _.last(i1.volume)
+        signal_plot: _.last(macdInd.signal)
+        macd_plot_red: _.last(macdInd.macd)
+        macd_plot_hist: _.last(macdInd.histogram)    
+```
+
+<h2> List of supported TALib functions </h2>
+
 ```coffee
 init: ->
 
@@ -481,8 +529,6 @@ handle: ->
             close: close
             optInTimePeriod: 0
 
-#    while (true)
-#            1
 onOrderUpdate: ->
 
 ```

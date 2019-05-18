@@ -1,4 +1,4 @@
-<h1>Talib Functions<h1>
+<h1>Talib Functions</h1>
 
 This is the unit test and it shows all the supported TALib function.
 By looking at the supported function you can create a function in you coffee script

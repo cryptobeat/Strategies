@@ -3,7 +3,7 @@
 This is the unit test and it shows all the supported TALib function.
 By looking at the supported function you can create a function in you coffee script
 <h3>Example</h3>
-In this file you are looking for a function, e.g.
+In this file you are looking for a function, e.g. <b>MACD</b>
 
 ```coffee
 @testNumber3 'MACD', 'outMACD', 'outMACDSignal', 'outMACDHist', talib.MACD

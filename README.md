@@ -225,7 +225,8 @@ macd: (data, fast_period, slow_period, signal_period) ->
         signal: results.outMACDSignal
         histogram: results.outMACDHist
     return result
-
+sign: (a) ->
+    return if a > 0 then 1 else -1
 # script initialization
 init: ->
     i1 = @instrument( {name:'pair1'} )
@@ -255,6 +256,16 @@ init: ->
             lineWidth: 1
             type: 'column'
             axis: 'axisExt'
+        sell_point:
+            color: 'red'
+            axis: 'mainAxis'
+            type: 'flags'
+            title: 'Sell'
+        buy_point:
+            color: 'green'
+            axis: 'mainAxis'
+            type: 'flags'
+            title: 'Buy'
 
 #define chart axes and position
     @setAxisOptions
@@ -275,7 +286,7 @@ init: ->
             height: '20%'
 
     @debug "Initialized:"
-
+    
 #Candle tick hook
 handle: ->
     i1 = @instrument( {name:'pair1'} )
@@ -285,8 +296,15 @@ handle: ->
         signal_plot: _.last(macdInd.signal)
         macd_plot_red: _.last(macdInd.macd)
         macd_plot_hist: _.last(macdInd.histogram)
-        
+    
+    @debug "........"
+    len = macdInd.histogram.length
+    if @sign(macdInd.histogram[len-1]) > @sign(macdInd.histogram[len-2])
+        @plot
+            sell_point: _.last(i1.close)
+    else if @sign(macdInd.histogram[len-1]) < @sign(macdInd.histogram[len-2])
+        @plot
+            buy_point: _.last(i1.close)
     
 onOrderUpdate: ->
-
 ```

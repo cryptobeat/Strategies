@@ -297,7 +297,6 @@ handle: ->
         macd_plot_red: _.last(macdInd.macd)
         macd_plot_hist: _.last(macdInd.histogram)
     
-    @debug "........"
     len = macdInd.histogram.length
     if @sign(macdInd.histogram[len-1]) > @sign(macdInd.histogram[len-2])
         @plot

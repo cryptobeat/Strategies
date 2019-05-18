@@ -1,7 +1,8 @@
 <h1>Talib Functions</h1>
 
 This is the unit test and it shows all the supported TALib function.
-By looking at the supported function you can create a function in you coffee script
+By looking at the supported function you can create a function in your coffee script.
+We will create talib documentation later, but in the meanwhile you can use this as a reference
 <h3>Example</h3>
 In this file you are looking for a function, e.g. <b>MACD</b>
 

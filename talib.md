@@ -14,7 +14,7 @@ In this file you are looking for a function, e.g.
         optInSlowPeriod: 0
         optInSignalPeriod: 0
 ```
-So in you script you will create a function like:
+So in your script your will may want to create a bridging function:
 
 ```coffee
 macd: (data, fast_period, slow_period, signal_period) ->
@@ -31,7 +31,7 @@ macd: (data, fast_period, slow_period, signal_period) ->
         histogram: results.outMACDHist
     return result
 ```
-and you can call it like:
+and you can call it:
 
 ```coffee
 handle: ->

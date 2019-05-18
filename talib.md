@@ -1,6 +1,6 @@
 <h1>Talib Functions</h1>
 
-This is the unit test and it shows all the supported TALib function.
+This is the unit test and it shows all the supported TALib functions.
 By looking at the supported function you can create a function in your coffee script.
 We will create talib documentation later, but in the meanwhile you can use this as a reference
 <h3>Example</h3>

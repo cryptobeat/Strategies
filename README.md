@@ -200,7 +200,7 @@ handle: ->
 
 onOrderUpdate: ->
 ```
-![chart](https://raw.githubusercontent.com/cryptobeat/Strategies/master/pictures/chart.png)
+![chart](https://github.com/cryptobeat/Strategies/master/pictures/chart.png)
 
 
 

@@ -310,3 +310,4 @@ handle: ->
     
 onOrderUpdate: ->
 ```
+![TA Lib](https://github.com/cryptobeat/Strategies/blob/master/pictures/talib.png)

@@ -200,6 +200,9 @@ handle: ->
 
 onOrderUpdate: ->
 ```
+![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/chart.png)
+
+
 
 <h2>TA-lib</h2>
 
@@ -307,3 +310,4 @@ handle: ->
     
 onOrderUpdate: ->
 ```
+![TA Lib](https://github.com/cryptobeat/Strategies/blob/master/pictures/talib.png)

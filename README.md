@@ -11,24 +11,29 @@ Once the agent is created you will see its logo.
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/bot_created.png)
 
 Next please press the edit button within the same logo and you can edit a script and run the backtest.
-This is a workspace where you edit and run back tests.
+This is the workspace where you edit and run back tests.
 The agent workspace consists of tree movable panels:
 - Charts area
 - Coffee Script area
 - Log area
+
 You can hide/show them using the control buttons or you can change the size of this panels too.
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/bot_panels.png)
 
-The the left there are control buttons:
-![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/control_buttons.png)
+At the left there are few control buttons:
 - Edit Parameters and time interval
 - Run Backtest 
 - Show Script Editor
 - Show Log output 
 - Save Script (Ctrl/Command-S)
 
-Once a script is written you have to set up script parameters such as trading pairs, durations, inital balances as well as script input parameters
+![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/control_buttons.png)
+
+
+Once the script is written you have to set up the script parameters such as trading pairs, durations, inital balances as well as the script input parameters
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/bot_params.png)
 
 After the paramerets set you can back test your trading algorithm
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/backtest.png)
+
+Enjoy!

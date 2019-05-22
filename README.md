@@ -1,12 +1,12 @@
 # Getting start
 
-One you log in you will the dashboard. In order to work with trading bots you will have to select marked button.
+One you log in you will the dashboard. In order to work with trading bots you will have to select the marked button.
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/dashboard.png)
 
 Then you will see your trading agents. They are empty, so you will have to create one and give it a name.
 
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/new_bot.png)
-![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/new_bot.png)
+![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/create_bot.png)
 
 Once the agent is created you will see its logo.
 

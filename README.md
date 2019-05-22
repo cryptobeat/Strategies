@@ -1,4 +1,4 @@
-# Getting start
+# Getting started
 
 After you log in you will see the dashboard. 
 ![dashboard](https://github.com/cryptobeat/Strategies/blob/master/pictures/dashboard.png)
@@ -29,11 +29,11 @@ At the left there are few control buttons:
 
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/control_buttons.png)
 
-
-Once the script is written you have to set up the script parameters such as trading pairs, durations, inital balances as well as the script input parameters
+You can test a defult script or take examples from https://github.com/cryptobeat/Strategies or create your own.
+Once you have typed or pasted the script you have to set up the script parameters such as trading pairs, durations, inital balances as well as the script input parameters
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/bot_params.png)
 
-After the paramerets set you can back test your trading algorithm
+After the paramerets set you can back test your trading algorithm using control buttons.
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/backtest.png)
 
 Enjoy!

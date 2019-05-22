@@ -10,8 +10,8 @@ In order to work with trading bots you will have to click on the ![workspace but
 Once the agent is created you will see its logo.
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/bot_created.png)
 
-Next please press the edit button within the same logo and you can edit a script and run the backtest.
-This is the workspace where you edit and run back tests.
+Next please press the edit button.
+This is the workspace where you edit a script and run back tests.
 The agent workspace consists of tree movable panels:
 - Charts area
 - Coffee Script area

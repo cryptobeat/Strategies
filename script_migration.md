@@ -70,7 +70,7 @@ handle: ->
         if amount_sell > min_amount
             trading.sell instrument, 'limit', amount_sell, price
 ```
-<h2>Context Migrations<h2>
+<h2>Context Migrations</h2>
 
 ```coffee
 #@engine:1.0

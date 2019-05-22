@@ -154,7 +154,7 @@ handle: ->
     ema_fast   = @ema(instrument.close, @context.period_fast)
     ema_slow   = @ema(instrument.close, @context.period_slow)
 
-    positions = @loadPositions('poloniex')
+    positions = @loadPositions()
     currency_amount =  positions[instrument.curr()]
     asset_amount    =  positions[instrument.asset()]
 

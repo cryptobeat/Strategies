@@ -70,7 +70,7 @@ handle: ->
         if amount_sell > min_amount
             trading.sell instrument, 'limit', amount_sell, price
 ```
-<h2>Context Migrations<h2>
+<h2>Context Migrations</h2>
 
 ```coffee
 #@engine:1.0
@@ -154,7 +154,7 @@ handle: ->
     ema_fast   = @ema(instrument.close, @context.period_fast)
     ema_slow   = @ema(instrument.close, @context.period_slow)
 
-    positions = @loadPositions('poloniex')
+    positions = @loadPositions()
     currency_amount =  positions[instrument.curr()]
     asset_amount    =  positions[instrument.asset()]
 
@@ -164,19 +164,18 @@ handle: ->
 
     if (ema_fast < ema_slow and rsi_last < @context.threshold_rsi_low) or price > sar_last
         if amount_buy > min_amount
-            @trading.buy 'limit' , instrument, price, amount_buy 
+            @trading.buy 'market' , instrument, price, amount_buy 
             @info "buy"
             @plot
                 buy_point: _.last(instrument.close)
     else if (ema_fast > ema_slow and rsi_last > @context.threshold_rsi_high) or price < sar_last
         if amount_sell > min_amount
-            @trading.sell 'limit', instrument, price, amount_sell
+            @trading.sell 'market', instrument, price, amount_sell
             @info "sell"
             @plot
                 sell_point: _.last(instrument.close)
             
 onOrderUpdate: ->            
 
-    
     
 ```

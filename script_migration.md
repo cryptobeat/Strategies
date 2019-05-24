@@ -164,19 +164,18 @@ handle: ->
 
     if (ema_fast < ema_slow and rsi_last < @context.threshold_rsi_low) or price > sar_last
         if amount_buy > min_amount
-            @trading.buy 'limit' , instrument, price, amount_buy 
+            @trading.buy 'market' , instrument, price, amount_buy 
             @info "buy"
             @plot
                 buy_point: _.last(instrument.close)
     else if (ema_fast > ema_slow and rsi_last > @context.threshold_rsi_high) or price < sar_last
         if amount_sell > min_amount
-            @trading.sell 'limit', instrument, price, amount_sell
+            @trading.sell 'market', instrument, price, amount_sell
             @info "sell"
             @plot
                 sell_point: _.last(instrument.close)
             
 onOrderUpdate: ->            
 
-    
     
 ```

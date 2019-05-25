@@ -25,6 +25,26 @@ sar : (high, low, lag, accel, accelmax) ->
         optInAcceleration : accel
         optInMaximum      : accelmax
 
+tradeInstrument: (instrument, orderType) ->
+    positions = @loadPositions()
+    currency_amount =  positions[instrument.curr()]
+    asset_amount    =  positions[instrument.asset()]
+    min_amount  =  0.001
+    
+    price =  _.last(instrument.close)
+    amount_buy  =  currency_amount / price
+    amount_sell =  asset_amount  
+    
+    if amount_buy > min_amount && orderType=='buy'
+        @trading.buy 'market' , instrument, price, amount_buy 
+        @info "buying #{amount_buy} of #{instrument.asset()} at #{price}"
+        @plot
+            buy_point: price    
+    if amount_sell > min_amount && orderType=='sell'
+        @trading.sell 'market' , instrument, price, amount_sell 
+        @info "selling #{amount_sell} of #{instrument.asset()} at #{price}"
+        @plot
+            sell_point: price 
 init: -> 
 
     @context.period_fast        = 17    # EMA period fast
@@ -53,16 +73,44 @@ init: ->
             axis: 'mainAxis'
             type: 'flags'
             title: 'Buy'
+        ema_fast:
+            name: 'EMA_Fast'
+            color: 'lime'
+            type: 'line'
+            chartidx: 1
+            axis: 'axisSig'
+        ema_slow:
+            name: 'EMA_Slow'
+            color: 'red'
+            lineWidth: 1
+            type: 'line'
+            axis: 'axisSig'
+        rsi:
+            name: 'RSI'
+            color: 'gray'
+            lineWidth: 1
+            type: 'column'
+            axis: 'axisExt'
 
 #define chart axes and position
     @setAxisOptions
         mainAxis: #predefined candles plot
             name: i1.asset() + i1.curr()
-            height: '60%'
+            height: '70%'
         axisVol:
             offset: '10%'
             height: '50%'
             secondary: true
+        axisSig:
+            name:'EMA'
+            offset: '80%'
+            height: '20%'
+        axisExt:
+            name:'RSI'
+            offset: '80%'
+            height: '20%'
+            secondary: true  
+        
     @debug "Initialized:"
     
 handle: ->
@@ -76,29 +124,18 @@ handle: ->
     sarResults = @sar(instrument.high, instrument.low, 1, @context.sar_accel, @context.sar_accelmax)
     sar_last   = _.last(sarResults)
 
-    ema_fast   = @ema(instrument.close, @context.period_fast)
-    ema_slow   = @ema(instrument.close, @context.period_slow)
-
-    positions = @loadPositions()
-    currency_amount =  positions[instrument.curr()]
-    asset_amount    =  positions[instrument.asset()]
-
-    min_amount  =  0.001
-    amount_buy  =  currency_amount / price
-    amount_sell =  asset_amount  
-    @debug 1
+    ema_fast   = _.last(@ema(instrument.close, @context.period_fast))
+    ema_slow   = _.last(@ema(instrument.close, @context.period_slow))
+    @plot
+       ema_fast: ema_fast
+       ema_slow: ema_slow
+       volume_plot: _.last(instrument.volume)
+       rsi: rsi_last
+           
     if (ema_fast < ema_slow and rsi_last < @context.threshold_rsi_low) or price > sar_last
-        if amount_buy > min_amount
-            @trading.buy 'market' , instrument, price, amount_buy 
-            @info "buy"
-            @plot
-                buy_point: _.last(instrument.close)
+        @tradeInstrument(instrument, 'buy')
     else if (ema_fast > ema_slow and rsi_last > @context.threshold_rsi_high) or price < sar_last
-        if amount_sell > min_amount
-            @trading.sell 'market', instrument, price, amount_sell
-            @info "sell"
-            @plot
-                sell_point: _.last(instrument.close)
+        @tradeInstrument(instrument, 'sell')
             
 onOrderUpdate: ->            
 

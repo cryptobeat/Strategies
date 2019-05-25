@@ -9,6 +9,27 @@ ema: (data, period) ->
         endIdx   : data.length - 1
         optInTimePeriod : period
 
+tradeInstrument: (instrument, orderType) ->
+    positions = @loadPositions()
+    currency_amount =  positions[instrument.curr()]
+    asset_amount    =  positions[instrument.asset()]
+    min_amount  =  0.001
+    
+    price =  _.last(instrument.close)
+    amount_buy  =  currency_amount / price
+    amount_sell =  asset_amount  
+    
+    if amount_buy > min_amount && orderType=='buy'
+        @trading.buy 'market' , instrument, price, amount_buy 
+        @info "buying #{amount_buy} of #{instrument.asset()} at #{price}"
+        @plot
+            buy_point: price    
+    if amount_sell > min_amount && orderType=='sell'
+        @trading.sell 'market' , instrument, price, amount_sell 
+        @info "selling #{amount_sell} of #{instrument.asset()} at #{price}"
+        @plot
+            sell_point: price 
+
 init: ->
 
     @context.sar_A_accel = 0.0002
@@ -42,8 +63,21 @@ init: ->
             axis: 'mainAxis'
             type: 'flags'
             title: 'Buy'
+        sar_plot_rd:
+            name: 'Sar RD'
+            color: 'red'
+            type: 'scatter'
+            chartidx: 1
+            lineWidth: 0
+            axis: 'axisSar'
+        sar_plot_gr:
+            name: 'Sar GR'
+            color: 'green'
+            type: 'scatter'
+            chartidx: 1
+            lineWidth: 0
+            axis: 'axisSar'
 
-#define chart axes and position
     @setAxisOptions
         mainAxis: #predefined candles plot
             name: i1.asset() + i1.curr()
@@ -51,6 +85,10 @@ init: ->
         axisVol:
             offset: '10%'
             height: '50%'
+            secondary: true
+        axisSar:
+            offset: '0%'
+            height: '60%'
             secondary: true
     @debug "Initialized:"   
 handle:->
@@ -111,30 +149,16 @@ handle:->
         optInMaximum: @context.sar_F_max
     sar_F_last = _.last(sar_F)   
 
-    
     price =  _.last(@ema(instrument.close, 2))
     
-    positions = @loadPositions()
-    currency_amount =  positions[instrument.curr()]
-    asset_amount    =  positions[instrument.asset()]
-    
-    min_amount  =  0.001
-    amount_buy  =  currency_amount / price
-    amount_sell =  asset_amount 
-    
     if price > sar_D_last
-         if amount_buy > min_amount
-            @trading.buy 'market' , instrument, price, amount_buy 
-            @info "buy"
-            @plot
-                buy_point: price
+         @tradeInstrument(instrument, 'buy')
+         @plot
+            sar_plot_rd: sar_D_last  
     else if price < sar_D_last
-        if amount_sell > min_amount
-            @trading.sell 'market', instrument, price, amount_sell
-            @info "sell"
-            @plot
-                sell_point: price
+         @tradeInstrument(instrument, 'sell')
+         @plot
+            sar_plot_gr: sar_D_last  
 
 onOrderUpdate: -> 
         
-       

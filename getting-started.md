@@ -487,3 +487,147 @@ handle:->
 # callback from exchange when an asset is sold or bought
 onOrderUpdate: ->  
 ```
+# Passing Back Test Parameter
+
+In order to define backtest paramters that you would like to give in initaliaztion window you will have to use the meter header <i>#input</i>.
+For example in flow flow and fast moving avereges we can define:
+```coffee
+#@input (name="pSlowMA", element="field", type="number", default="20", min="1", max="50", description="Fast MA")
+#@input(name="pFastMA", element="list", type="number", default="40", values="10,15,20,30,40,50", description="Slow MA")
+```
+Then you can access the parameters through the context variable, for example:
+```coffee
+@debug "slow MA param: #{@context.param.pSlowMA}, fast MA param: #{@context.param.pFastMA}"
+```
+The full scrip will be 
+```coffee
+#@engine:1.0
+#@name:migration_example 0.0.1
+#@input(name="pair1", element="field", type="instrument", default="BTCETH", min="5min", max="24h", description="Primary pair")
+#@input (name="pSlowMA", element="field", type="number", default="20", min="1", max="50", description="Fast MA")
+#@input(name="pFastMA", element="list", type="number", default="40", values="10,15,20,30,40,50", description="Slow MA")
+
+ema: (data, period) ->
+    results = @talib.EMA
+        inReal   : data
+        startIdx : 0
+        endIdx   : data.length - 1 
+        optInTimePeriod : period
+tradeInstrument: (instrument, orderType) ->
+    positions = @loadPositions()
+    currency_amount =  positions[instrument.curr()]
+    asset_amount    =  positions[instrument.asset()]
+    min_amount  =  0.001
+    
+    price =  _.last(instrument.close)
+    amount_buy  =  currency_amount / price
+    amount_sell =  asset_amount  
+    
+    if amount_buy > min_amount && orderType=='buy'
+        @trading.buy 'market' , instrument, price, amount_buy 
+        @info "buying #{amount_buy} of #{instrument.asset()} at #{price}"
+        @plot
+            buy_point: price    
+    if amount_sell > min_amount && orderType=='sell'
+        @trading.sell 'market' , instrument, price, amount_sell 
+        @info "selling #{amount_sell} of #{instrument.asset()} at #{price}"
+        @plot
+            sell_point: price 
+# called once during initalization
+init: ->
+    @debug "slow MA param: #{@context.param.pSlowMA}, fast MA param: #{@context.param.pFastMA}"
+
+    @context.period_fast        = @context.param.pFastMA    # EMA period fast
+    @context.period_slow        = @context.param.pSlowMA    # EMA period slow
+    
+    
+    i1 = @instrument( {name:'pair1'} )
+    @setPlotOptions
+        slow_ma:
+            color: 'blue'
+            axis: 'mainAxis'
+            type: 'line'
+            title: 'Buy'
+        fast_ma:
+            color: 'red'
+            axis: 'mainAxis'
+            type: 'line'
+            title: 'Buy'
+        volume:
+            name: 'Volume' 
+            color: 'lightgray'
+            type: 'column'
+            chartidx: 1 # new chart
+            axis: 'axisVol'
+        sell_point:
+            color: 'red'
+            axis: 'mainAxis'
+            type: 'flags'
+            title: 'Sell'
+        buy_point:
+            color: 'green'
+            axis: 'mainAxis'
+            type: 'flags'
+            title: 'Buy'
+        slow_ma1:
+            color: 'blue'
+            axis: 'otherAxis'
+            type: 'line'
+            title: 'Buy'
+        fast_ma1:
+            color: 'red'
+            axis: 'otherAxis'
+            type: 'line'
+            title: 'Buy'
+#define chart axes and position
+    @setAxisOptions
+        mainAxis: #predefined candles plot
+            name: i1.asset() + i1.curr()
+            height: '60%'
+        axisVol:
+            offset: '20%'
+            height: '50%'
+            secondary: true # secondary to main axis in the same position
+        otherAxis: #predefined candles plot
+            name: 'MAs'
+            offset: '80%'
+            height: '20%'
+            
+    @debug "Initialized:"   
+
+    
+    @debug "Initialized:"   
+# called on every candle
+handle:->
+    i1 =   @instrument( {name:'pair1'} )
+    price      =   _.last(i1.close)
+    date       =   new Date(_.last i1.timeStamp)
+
+    ema_fast   = @ema(i1.close, @context.period_fast)
+    ema_slow   = @ema(i1.close, @context.period_slow)
+    d2  = ema_fast[ema_fast.length - 2] - ema_slow[ema_slow.length-2]
+    d1 =  ema_fast[ema_fast.length - 1] - ema_slow[ema_slow.length-1]
+    
+    @plot
+        slow_ma: _.last(ema_slow)
+        fast_ma: _.last(ema_fast) 
+        volume: _.last(i1.volume) 
+        slow_ma1: _.last(ema_slow)
+        fast_ma1: _.last(ema_fast) 
+
+    #crossover condition
+    if  d1*d2 < 0  
+        if (d1 > 0) # long
+            @debug "long #{price} at #{date}"
+            @plot
+                buy_point: price
+            @tradeInstrument(i1, 'buy')
+        else #short
+            @debug "short #{price}  at #{date}"
+            @plot
+                sell_point: price
+            @tradeInstrument(i1, 'sell')
+
+# callback from exchange when an asset is sold or bought
+onOrderUpdate: ->  
+```

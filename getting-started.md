@@ -56,13 +56,15 @@ handle:->
 
     ema_fast   = @ema(i1.close, @context.period_fast)
     ema_slow   = @ema(i1.close, @context.period_slow)
-    
+    d2  = ema_fast[ema_fast.length - 2] - ema_slow[ema_slow.length-2]
+    d1 =  ema_fast[ema_fast.length - 1] - ema_slow[ema_slow.length-1]
+
     #crossover condition
-    if  (_.last(ema_fast) - _.last(ema_fast,1)) *  (_.last(ema_slow) - _.last(ema_slow,1)) < 0  
-        if (ema_fast > ema_slow) # long
-            debug "long at ${date}"
+    if  d1*d2 < 0  
+        if (d1 > 0) # long
+            @debug "long #{price} at #{date}"
         else #short
-            debug "short at ${date}"
+            @debug "short #{price}  at #{date}"
 
 # callback from exchange when an asset is sold or bought
 onOrderUpdate: ->  

@@ -136,3 +136,95 @@ handle:->
 # callback from exchange when an asset is sold or bought
 onOrderUpdate: ->  
 ```
+## Example: Multiple chart axes
+You can add multiple axes and markers to any of them as well
+
+```coffee
+#@engine:1.0
+#@name:migration_example 0.0.1
+#@input(name="pair1", element="field", type="instrument", default="BTCETH", min="5min", max="24h", description="Primary pair")
+
+ema: (data, period) ->
+    results = @talib.EMA
+        inReal   : data
+        startIdx : 0
+        endIdx   : data.length - 1 
+        optInTimePeriod : period
+# called once during initalization
+init: ->
+    @context.period_fast        = 12    # EMA period fast
+    @context.period_slow        = 47    # EMA period slow
+    
+    i1 = @instrument( {name:'pair1'} )
+    @setPlotOptions
+        slow_ma:
+            color: 'blue'
+            axis: 'mainAxis'
+            type: 'line'
+            title: 'Buy'
+        fast_ma:
+            color: 'red'
+            axis: 'mainAxis'
+            type: 'line'
+            title: 'Buy'
+        volume:
+            name: 'Volume' 
+            color: 'lightgray'
+            type: 'column'
+            chartidx: 1 # new chart
+            axis: 'axisVol'
+        sell_point:
+            color: 'red'
+            axis: 'mainAxis'
+            type: 'flags'
+            title: 'Sell'
+        buy_point:
+            color: 'green'
+            axis: 'mainAxis'
+            type: 'flags'
+            title: 'Buy'
+
+#define chart axes and position
+    @setAxisOptions
+        mainAxis: #predefined candles plot
+            name: i1.asset() + i1.curr()
+            height: '100%'
+        axisVol:
+            offset: '50%'
+            height: '50%'
+            secondary: true # secondary to main axis in the same position
+            
+    @debug "Initialized:"   
+
+    
+    @debug "Initialized:"   
+# called on every candle
+handle:->
+    i1 =   @instrument( {name:'pair1'} )
+    price      =   _.last(i1.close)
+    date       =   new Date(_.last i1.timeStamp)
+
+    ema_fast   = @ema(i1.close, @context.period_fast)
+    ema_slow   = @ema(i1.close, @context.period_slow)
+    d2  = ema_fast[ema_fast.length - 2] - ema_slow[ema_slow.length-2]
+    d1 =  ema_fast[ema_fast.length - 1] - ema_slow[ema_slow.length-1]
+    
+    @plot
+        slow_ma: _.last(ema_slow)
+        fast_ma: _.last(ema_fast) 
+        volume: _.last(i1.volume) 
+
+    #crossover condition
+    if  d1*d2 < 0  
+        if (d1 > 0) # long
+            @debug "long #{price} at #{date}"
+            @plot
+                buy_point: price
+        else #short
+            @debug "short #{price}  at #{date}"
+            @plot
+                sell_point: price
+
+# callback from exchange when an asset is sold or bought
+onOrderUpdate: ->  
+```

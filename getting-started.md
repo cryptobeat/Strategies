@@ -23,6 +23,8 @@ handle:->
 # callback from exchange when an asset is sold or bought
 onOrderUpdate: ->    
 ```
+![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/s1.png)
+
 ## Example: Moving average crossover alogorithm
 This alogrithm is usually decribed as:
 - Go short when the fast moving average crosses to below the slow moving average.
@@ -69,6 +71,8 @@ handle:->
 # callback from exchange when an asset is sold or bought
 onOrderUpdate: ->  
 ```
+![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/s2.png)
+
 ## Example: Adding a chart
 In order to see a chart you have do call 2 functions in the init method of the script. The function naes are <b>@setPlotOptions</b> and <b>@setAxisOptions</b>. setPlotOptions sets the series attributes such as series type, color, etc. Each serias must have a refrence to its axis which are defined in the setAxisOptions method.
 
@@ -136,6 +140,8 @@ handle:->
 # callback from exchange when an asset is sold or bought
 onOrderUpdate: ->  
 ```
+![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/s3.png)
+
 ## Example: Multiple chart axes
 You can add multiple axes and markers to any of them as well
 
@@ -228,6 +234,8 @@ handle:->
 # callback from exchange when an asset is sold or bought
 onOrderUpdate: ->  
 ```
+![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/s4.png)
+
 ## Example: Adding a second chart
 You can create a second chart too by giving a new axis
 ```coffee
@@ -334,6 +342,8 @@ handle:->
 # callback from exchange when an asset is sold or bought
 onOrderUpdate: ->  
 ```
+![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/s5.png)
+
 ## Trading
 
 In order to trade you can use this function. It sells/buys everything
@@ -490,6 +500,8 @@ onOrderUpdate: ->
 # Passing Back Test Parameter
 
 In order to define backtest paramters that you would like to give in initaliaztion window you will have to use the meter header <i>#input</i>.
+![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/s6.png)
+
 For example in flow flow and fast moving avereges we can define:
 ```coffee
 #@input (name="pSlowMA", element="field", type="number", default="20", min="1", max="50", description="Fast MA")
@@ -499,7 +511,7 @@ Then you can access the parameters through the context variable, for example:
 ```coffee
 @debug "slow MA param: #{@context.param.pSlowMA}, fast MA param: #{@context.param.pFastMA}"
 ```
-The full scrip will be 
+The full script will be 
 ```coffee
 #@engine:1.0
 #@name:migration_example 0.0.1

@@ -1,5 +1,5 @@
 
-# Script Development Getting stated
+# Script Development Getting Stated
 
 ## Minimalistic Script
 Every script has to have a meta information which contains of the following:

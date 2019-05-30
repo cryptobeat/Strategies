@@ -499,10 +499,13 @@ onOrderUpdate: ->
 ```
 # Passing Back Test Parameter
 
-In order to define backtest paramters that you would like to give in initaliaztion window you will have to use the meter header <i>#input</i>.
+Parameters are set up in the back test dialog window.
+
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/s6.png)
 
-For example in flow flow and fast moving avereges we can define:
+In order to define backtest paramters you have to use the meta header <i>#input</i>.
+
+For example for our slow and fast moving avereges we can define in the script header:
 ```coffee
 #@input (name="pSlowMA", element="field", type="number", default="20", min="1", max="50", description="Fast MA")
 #@input(name="pFastMA", element="list", type="number", default="40", values="10,15,20,30,40,50", description="Slow MA")
@@ -511,7 +514,7 @@ Then you can access the parameters through the context variable, for example:
 ```coffee
 @debug "slow MA param: #{@context.param.pSlowMA}, fast MA param: #{@context.param.pFastMA}"
 ```
-The full script will be 
+The full script
 ```coffee
 #@engine:1.0
 #@name:migration_example 0.0.1

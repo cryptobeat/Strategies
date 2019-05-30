@@ -499,7 +499,7 @@ onOrderUpdate: ->
 ```
 # Passing Back Test Parameter
 
-Parameters are set up in the back test dialog window.
+In the script you can define parameters. Parameters will be displayed in the back test configuration window.
 
 ![chart](https://github.com/cryptobeat/Strategies/blob/master/pictures/s6.png)
 

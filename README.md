@@ -1,7 +1,7 @@
 # Cryprobeat Strategy Repository
 
-This repository contains the script examples for developing crypto trading bots
-Please refer to the offical the Getting Started page
+This repository contains script examples for developing crypto trading bots
+Please refer to the offical page
 https://www.cryptobeat.com/getting-started/
 
 

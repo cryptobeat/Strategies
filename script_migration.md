@@ -2,6 +2,9 @@
 
 You can take other coffee scripts and migrate them to our platform
 
+Cryptobeat API documentation and other guides are located at:
+https://www.cryptobeat.com/strategy-sdk/
+
 Lets take for instance a MACD crossover script from here:
 https://github.com/cryptelligent/Cryptotrader/blob/master/Ma_crossover_parabolic_sar.coffee
 

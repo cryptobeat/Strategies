@@ -2,19 +2,17 @@
 #@name:sample 0.0.1
 #@input(name="pair1", element="field", type="instrument", default="BTCUSDT", min="5min", max="24h", description="Primary pair")
   
-#### Maintain risks using multi arm bandits epsilon greedy algorithm ####
-## this examples shows how to esitimate a risk of stop loss
-## The trading algo is RSI based, but the main focus is 
-## stop loss estimation using reinforcment learning
+#### Bot script starts below ####
 
 # Epsilon Greedy Bandits
 bandits_init: (nbActions) ->
     # this is exploration vs exploitation rate
-    @context.eps = 0.3
+    @context.eps = 0.2
     # values for each action
     @context.actionValues = []
     # values for each action zero initilization
     @context.actionValues.push(0) for i in [0 .. nbActions - 1]
+    #@context.actionValues = [0.03184615384615385,0.16510309398496248,0.1285714285714286,0.17438048565220593,-0.0642857142857143]
     # trading episodes count 
     @context.bCount = 0
 
@@ -62,7 +60,9 @@ tradeInstrument: (instrument, orderType) ->
         perform = (curr - @context.initialCurr) / @context.initialCurr * 100
         @trading.sell 'poloniex_trading' , instrument, price, amount_sell 
         @info "selling #{amount_sell} of #{instrument.asset()} at #{price}, perform: #{perform}%,buyHold: #{buyHold}%"
-
+        
+        @context.profit = perform 
+        @context.profitBH = buyHold 
     
 rsi:(data, period, last = true) ->
     results = @talib.RSI
@@ -94,11 +94,17 @@ calcCurr:(instrument, positions = null)->
     
 # script initialization
 init: ->
+    @context.profit = 0 
+    @context.profitBH = 0 
+        
     @context.initalPrice = 0
-    @context.period = 24
+    @context.period = 12
     @context.trading_state = 'watch'
     # this is risk bandits
-    @context.risks = [ 0.5, 0.7, 0.9, 1.3, 1.6]
+    @context.risks = [ 2, 2.5, 2.9, 3.2, 3.5]
+    @context.riskColors = ['rgba(66, 141, 245,0.3)',
+    'rgba(245, 242, 66,0.3)','rgba(245, 161, 66,0.3)',
+    'rgba(245, 78, 66,0.3)','rgba(207, 17, 197,0.3)']
     @bandits_init(@context.risks.length)
     
     i1 = @instrument( {name:'pair1'} )
@@ -110,12 +116,19 @@ init: ->
             type: 'column'
             chartidx: 1
             axis: 'axisVol'
+        stop_price:
+            name: 'Stop Price' 
+            color: 'red'
+            type: 'coloredarea'
+            axis: 'mainAxis'
         bb_upper:
             name: 'Upper Band' 
             color: 'lightgray'
+            axis: 'mainAxis'
         bb_lower:
             name: 'Upper Band' 
             color: 'lightgray'
+            axis: 'mainAxis'
         sell_point:
             color: 'red'
             axis: 'mainAxis'
@@ -131,6 +144,19 @@ init: ->
             axis: 'mainAxis'
             type: 'flags'
             title: 'Buy'
+        rsi:
+            name: 'Rsi' 
+            color: 'blue'
+            axis: 'rsiAxis'
+        profit:
+            name: 'Profit' 
+            color: 'green'
+            axis: 'profitAxis'
+
+        profitBH:
+            name: 'Profit B&H' 
+            color: 'red'
+            axis: 'profitAxis'
 
 #define chart axes and position
     @setAxisOptions
@@ -141,6 +167,33 @@ init: ->
             offset: '10%'
             height: '50%'
             secondary: true
+        rsiAxis:
+            name:'<b>RSI</b>'
+            offset: '60%'
+            height: '20%'
+            plotLines:[{
+                    width: 1,
+                    color: 'red',
+                    value: 70,
+                    label: {
+                        text: 'RSI 70'
+                    }
+                    },
+                    {
+                    width: 1,
+                    color: 'green',
+                    value: 30,
+                    label: {
+                        text: 'RSI 30'
+                    }
+                    }]
+        profitAxis:
+            name:'<b>Profit</b>'
+            offset: '80%'
+            height: '20%'
+            minPadding: 0.005
+            maxPadding: 0.005
+            
     @debug "Initialized:"
 
 #Candle tick hook
@@ -162,11 +215,23 @@ handle: ->
         volume_plot: _.last(i1.volume)
         bb_upper: upper_band
         bb_lower: lower_band
+        rsi: rsi
+        profit: @context.profit
+        profitBH: @context.profitBH
+    
+    
+    if @context.stop_price > 0 
+        @plot
+            stop_price: 
+                    color: @context.riskColors[@context.bAction]
+                    segmentColor: @context.riskColors[@context.bAction]
+                    x: _.last(i1.timeStamp)
+                    y: @context.stop_price 
         
-    if @context.trading_state == 'watch' && rsi < 30
+    if @context.trading_state == 'watch' && rsi < 20
         @context.trading_state = 'rsi_converge'
         
-    else if @context.trading_state == 'rsi_converge' && rsi > 30
+    else if @context.trading_state == 'rsi_converge' && rsi > 20
         if price < middle
             @context.trading_state = 'open_position'
             @context.target_price = middle
@@ -185,24 +250,29 @@ handle: ->
         else 
             @debug "rsi did not converge, p: #{price}, m: #{middle}"
             @context.trading_state = 'watch'
-    
-    else if @context.trading_state == 'open_position' && price > @context.target_price 
+
+    else if @context.trading_state == 'open_position' && rsi > 80
+        if  price > @context.openPrice   
+            @context.trading_state = 'rsi_converge_up'
+
+    else if @context.trading_state == 'rsi_converge_up' && rsi < 50 
         @context.trading_state = 'watch'
-        #reward = price - @context.openPrice
         @info "sold"
         @bandits_update(@context.bAction, 1)
         @plot
             sell_point: price
         @tradeInstrument(i1, 'sell')
-
-    else if @context.trading_state == 'open_position' && price < @context.stop_price 
+        
+    # stop loss    
+    else if ( @context.trading_state == 'open_position' ||
+              @context.trading_state == 'rsi_converge_up' ) && 
+                price < @context.stop_price
         @context.trading_state = 'watch'
-        #reward = price - @context.openPrice
         @warn "loss"
         @bandits_update(@context.bAction, -1)
         @plot
             stop_sell_point: price
             
         @tradeInstrument(i1, 'sell')
-        
+
 onOrderUpdate: ->
